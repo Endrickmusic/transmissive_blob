@@ -35,7 +35,7 @@ export default function Shader(){
           iChannel0: {
              type: "t",
             value: texture,
-              }
+              },
          }),[]
       )   
 

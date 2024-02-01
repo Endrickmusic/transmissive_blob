@@ -110,7 +110,7 @@ float PI = 3.1415926;
 	
 	
 	void main() {
-
+		// vec2 uv = (gl_FragCoord.xy - .5 * uResolution.xy ) / uResolution.y;
 		vec2 uv = vUv;
 		vec3 col = vec3(0.0);
 		

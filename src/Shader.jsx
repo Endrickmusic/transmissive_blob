@@ -1,44 +1,49 @@
-import { OrbitControls, shaderMaterial } from "@react-three/drei"
+import { OrbitControls } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useRef, useMemo } from "react"
 
 import vertexShader from "./shader/vertexShader.js"
 import fragmentShader from "./shader/fragmentShader.js"
-import { DoubleSide, Color } from "three"
-import colors from 'nice-color-palettes'
+import { DoubleSide, Vector2 } from "three"
 
-export default function Experience(){
 
-const mesh = useRef()
+export default function Shader(){
 
-let palette = colors[Math.floor(Math.random() * colors.length)]
-
-palette = palette.map((color) => new Color(color))
-
-const uniforms = useMemo(
-  () => ({
-    uTime: { value:0.0 },
-    uColor: { value: palette }
-  }), []
-)
-
-useFrame((state, delta) => {
-  mesh.current.material.uniforms.uTime.value += delta / 100
-})
+    const meshRef = useRef();
+  
+    useFrame((state) => {
+      let time = state.clock.getElapsedTime()
+  
+      // start from 20 to skip first 20 seconds ( optional )
+      meshRef.current.material.uniforms.uTime.value = time
+    
+    })
+  
+      // Define the shader uniforms with memoization to optimize performance
+      const uniforms = useMemo(
+        () => ({
+          uTime: {
+            type: "f",
+            value: 1.0,
+              },
+          uResolution: {
+            type: "v2",
+            value: new Vector2(4, 3),
+            }
+         }),[]
+      )   
 
   return (
     <>
       <OrbitControls />    
-      <mesh
-        ref={mesh}
-      >   
-        <planeGeometry args={[1, 1, 128, 128]}/>
-          <shaderMaterial 
-            vertexShader = { vertexShader }
-            fragmentShader = { fragmentShader }
-            uniforms = { uniforms }
-            side = { DoubleSide }
+      <mesh ref={meshRef}>
+          <planeGeometry args={[4, 3]} />
+          <shaderMaterial
+            uniforms={uniforms}
+            vertexShader={vertexShader}
+            fragmentShader={fragmentShader}
+            side={DoubleSide}
           />
-          </mesh>
+        </mesh>
    </>
   )}

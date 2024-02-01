@@ -1,13 +1,10 @@
-import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 
 import './index.css'
-
 import Shader from './Shader.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  
   return (
   <>
 

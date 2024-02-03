@@ -1,5 +1,5 @@
-import { OrbitControls } from "@react-three/drei"
-import { useFrame } from "@react-three/fiber"
+import { OrbitControls, useTexture, useAspect } from "@react-three/drei"
+import { useFrame, useThree } from "@react-three/fiber"
 import { useRef, useMemo } from "react"
 
 import vertexShader from "./shader/vertexShader.js"
@@ -10,15 +10,26 @@ import { DoubleSide, Vector2 } from "three"
 export default function Shader(){
 
     const meshRef = useRef();
-  
+    
+    // Load the noise texture and update the shader uniform
+    const texture01 = useTexture("./textures/clouds_02.jpg")
+    console.log(texture01.image.width)
+
+    const size = useAspect(texture01.image.width, texture01.image.height)
+
+    const viewport = useThree(state => state.viewport)
+
     useFrame((state) => {
       let time = state.clock.getElapsedTime()
   
-      // start from 20 to skip first 20 seconds ( optional )
+      
       meshRef.current.material.uniforms.uTime.value = time
-    
+      meshRef.current.material.uniforms.uResolution.value = new Vector2(viewport.width, viewport.height);
+      
     })
   
+    
+
       // Define the shader uniforms with memoization to optimize performance
       const uniforms = useMemo(
         () => ({
@@ -28,16 +39,23 @@ export default function Shader(){
               },
           uResolution: {
             type: "v2",
-            value: new Vector2(4, 3),
-            }
-         }),[]
+            value: new Vector2(viewport.width, viewport.height),
+            },
+          texture01: {
+              type: "t",
+              value: texture01,
+          },
+         }),[viewport.width, viewport.height, texture01]
       )   
 
   return (
     <>
       <OrbitControls />    
-      <mesh ref={meshRef}>
-          <planeGeometry args={[4, 3]} />
+      <mesh 
+      ref = { meshRef }
+      scale = { size }
+      >
+          <planeGeometry args={[1, 1]} />
           <shaderMaterial
             uniforms={uniforms}
             vertexShader={vertexShader}

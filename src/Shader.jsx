@@ -14,21 +14,24 @@ export default function Shader(){
     // Load the noise texture and update the shader uniform
     const texture01 = useTexture("./textures/clouds_02.jpg")
     console.log(texture01.image.width)
+    
 
     const size = useAspect(texture01.image.width, texture01.image.height)
 
     const viewport = useThree(state => state.viewport)
+    const pixel = useThree(state => state.size)
+
 
     useFrame((state) => {
       let time = state.clock.getElapsedTime()
   
       
       meshRef.current.material.uniforms.uTime.value = time
-      meshRef.current.material.uniforms.uResolution.value = new Vector2(viewport.width, viewport.height);
+      meshRef.current.material.uniforms.uResolution.value = new Vector2(pixel.x, pixel.y);
       
     })
   
-    
+    console.log(pixel)
 
       // Define the shader uniforms with memoization to optimize performance
       const uniforms = useMemo(
